@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:mynotes/firebase_options.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({Key? key}) : super(key: key);
@@ -32,58 +30,52 @@ class _RegisterViewState extends State<RegisterView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Register')),
-      body: FutureBuilder(
-          future: Firebase.initializeApp(
-              options: DefaultFirebaseOptions.currentPlatform),
-          builder: (context, snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.done:
-                return Column(
-                  children: [
-                    TextField(
-                      autocorrect: false,
-                      controller: _email,
-                      decoration:
-                          const InputDecoration(hintText: 'Enter your email'),
-                      enableSuggestions: false,
-                      keyboardType: TextInputType.emailAddress,
-                    ),
-                    TextField(
-                      autocorrect: false,
-                      controller: _password,
-                      decoration: const InputDecoration(
-                          hintText: 'Enter your password'),
-                      enableSuggestions: false,
-                      obscureText: true,
-                    ),
-                    TextButton(
-                      onPressed: () async {
-                        final email = _email.text;
-                        final password = _password.text;
+      body: Column(
+        children: [
+          TextField(
+            autocorrect: false,
+            controller: _email,
+            decoration: const InputDecoration(hintText: 'Enter your email'),
+            enableSuggestions: false,
+            keyboardType: TextInputType.emailAddress,
+          ),
+          TextField(
+            autocorrect: false,
+            controller: _password,
+            decoration: const InputDecoration(hintText: 'Enter your password'),
+            enableSuggestions: false,
+            obscureText: true,
+          ),
+          TextButton(
+            onPressed: () async {
+              final email = _email.text;
+              final password = _password.text;
 
-                        try {
-                          final userCredential = await FirebaseAuth.instance
-                              .createUserWithEmailAndPassword(
-                                  email: email, password: password);
-                          print(userCredential);
-                        } on FirebaseAuthException catch (e) {
-                          if (e.code == 'weak-password') {
-                            print('Weak assword');
-                          } else if (e.code == 'email-already-in-use') {
-                            print('Email is already in use');
-                          } else if (e.code == 'invalid-email') {
-                            print('Invalid email');
-                          }
-                        }
-                      },
-                      child: const Text('Register'),
-                    ),
-                  ],
-                );
-              default:
-                return const Text('Loading...');
-            }
-          }),
+              try {
+                final userCredential = await FirebaseAuth.instance
+                    .createUserWithEmailAndPassword(
+                        email: email, password: password);
+                print(userCredential);
+              } on FirebaseAuthException catch (e) {
+                if (e.code == 'weak-password') {
+                  print('Weak assword');
+                } else if (e.code == 'email-already-in-use') {
+                  print('Email is already in use');
+                } else if (e.code == 'invalid-email') {
+                  print('Invalid email');
+                }
+              }
+            },
+            child: const Text('Register'),
+          ),
+          TextButton(
+              onPressed: () {
+                Navigator.of(context)
+                    .pushNamedAndRemoveUntil('/login/', (route) => false);
+              },
+              child: const Text('Already registered? Login here!'))
+        ],
+      ),
     );
   }
 }
